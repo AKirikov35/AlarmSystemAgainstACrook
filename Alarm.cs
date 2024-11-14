@@ -53,7 +53,7 @@ public class Alarm : MonoBehaviour
         _audioSource.loop = true;
 
         if (_alarmClip == null)
-            Debug.LogError("Отсутствует аудиоклип", this);
+            Debug.LogError("РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ Р°СѓРґРёРѕРєР»РёРї", this);
     }
 
     private void SetAlarmState(bool isSpotted)
