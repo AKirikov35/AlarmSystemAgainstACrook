@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
@@ -9,27 +9,43 @@ public class AlarmColorChanger : AlarmBase
 
     private Renderer _renderer;
 
-    private void Start()
+    private void Awake()
     {
         _renderer = GetComponent<Renderer>();
         _renderer.material.color = _defaultColor;
     }
 
-    public void ChangeColor(bool isSpotted)
+    public override void AlarmActivated()
     {
-        StartCoroutineIfNotRunning(ChangeState(isSpotted));
+        RefreshCoroutine(ChangeColorToAlarm());
     }
 
-    protected override IEnumerator ChangeState(bool isActive)
+    public override void AlarmDeactivated() 
     {
-        Color targetColor = isActive ? _alarmColor : _defaultColor;
+        RefreshCoroutine(ChangeColorToNormal());
+    }
 
-        while (!Color.Equals(_renderer.material.color, targetColor))
+    private IEnumerator ChangeColorToAlarm()
+    {
+        while (Equals(_renderer.material.color, _alarmColor) == false)
         {
-            _renderer.material.color = Color.Lerp(_renderer.material.color, targetColor, Time.deltaTime);
+            _renderer.material.color = Color.Lerp(_renderer.material.color, _alarmColor, Time.deltaTime);
+
             yield return null;
         }
 
-        _renderer.material.color = targetColor;
+        _renderer.material.color = _alarmColor;
+    }
+
+    private IEnumerator ChangeColorToNormal()
+    {
+        while (Equals(_renderer.material.color, _defaultColor) == false)
+        {
+            _renderer.material.color = Color.Lerp(_renderer.material.color, _defaultColor, Time.deltaTime);
+
+            yield return null;
+        }
+
+        _renderer.material.color = _defaultColor;
     }
 }
