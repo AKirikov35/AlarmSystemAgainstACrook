@@ -1,20 +1,16 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(BoxCollider))]
 public class ResponseZone : MonoBehaviour
 {
-    private Rigidbody _rigidbody;
     private BoxCollider _collider;
 
-    public event Action<bool> AlarmTriggered;
+    public event Action AlarmActivated;
+    public event Action AlarmDeactivated;
 
-    private void Start()
+    private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
-        _rigidbody.isKinematic = true;
-
         _collider = GetComponent<BoxCollider>();
         _collider.isTrigger = true;
     }
@@ -22,12 +18,12 @@ public class ResponseZone : MonoBehaviour
     private void OnTriggerEnter(Collider collider)
     {
         if (collider.TryGetComponent<Crook>(out _))
-            AlarmTriggered?.Invoke(true);
+            AlarmActivated?.Invoke();
     }
 
     private void OnTriggerExit(Collider collider)
     {
         if (collider.TryGetComponent<Crook>(out _))
-            AlarmTriggered?.Invoke(false);
+            AlarmDeactivated?.Invoke();
     }
 }
