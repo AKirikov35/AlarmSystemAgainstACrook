@@ -1,17 +1,19 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 public abstract class AlarmBase : MonoBehaviour
 {
-    protected Coroutine _currentCoroutine;
+    protected Coroutine CurrentCoroutine;
 
-    protected void StartCoroutineIfNotRunning(IEnumerator coroutine)
+    public abstract void AlarmActivated();
+
+    public abstract void AlarmDeactivated();
+
+    protected void RefreshCoroutine(IEnumerator coroutine)
     {
-        if (_currentCoroutine != null)
-            StopCoroutine(_currentCoroutine);
+        if (CurrentCoroutine != null)
+            StopCoroutine(CurrentCoroutine);
 
-        _currentCoroutine = StartCoroutine(coroutine);
+        CurrentCoroutine = StartCoroutine(coroutine);
     }
-
-    protected abstract IEnumerator ChangeState(bool isActive);
 }
