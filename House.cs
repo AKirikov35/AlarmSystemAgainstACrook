@@ -20,22 +20,25 @@ public class House : MonoBehaviour
 
     private void OnEnable()
     {
-        if (_responseZone != null)
-            _responseZone.AlarmTriggered += PlayAlarmSound;
+        _responseZone.AlarmActivated += AlarmActivated;
+        _responseZone.AlarmDeactivated += AlarmDeactivated;
     }
 
     private void OnDisable()
     {
-        if (_responseZone != null)
-            _responseZone.AlarmTriggered -= PlayAlarmSound;
+        _responseZone.AlarmActivated -= AlarmActivated;
+        _responseZone.AlarmDeactivated -= AlarmDeactivated;
     }
 
-    private void PlayAlarmSound(bool alarmTriggerActivate)
+    private void AlarmActivated()
     {
-        if (_alarmSound != null)
-            _alarmSound.SetAlarmState(alarmTriggerActivate);
+        _alarmSound.AlarmActivated();
+        _alarmColorChanger.AlarmActivated();
+    }
 
-        if (_alarmColorChanger != null)
-            _alarmColorChanger.ChangeColor(alarmTriggerActivate);
+    private void AlarmDeactivated()
+    {
+        _alarmSound.AlarmDeactivated();
+        _alarmColorChanger.AlarmDeactivated();
     }
 }
