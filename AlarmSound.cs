@@ -12,9 +12,19 @@ public class AlarmSound : AlarmBase
     private readonly float _minVolume = 0.0f;
     private readonly float _soundDelta = 0.2f;
 
-    private void Start()
+    private void Awake()
     {
         SetupAudioSource();
+    }
+
+    public override void AlarmActivated()
+    {
+        RefreshCoroutine(IncreaseSound());
+    }
+
+    public override void AlarmDeactivated()
+    {
+        RefreshCoroutine(DecreaseSound());
     }
 
     private void SetupAudioSource()
@@ -29,34 +39,29 @@ public class AlarmSound : AlarmBase
             return;
     }
 
-    public void SetAlarmState(bool isSpotted)
+    private IEnumerator IncreaseSound()
     {
-        StartCoroutineIfNotRunning(ChangeState(isSpotted));
-    }
-
-    protected override IEnumerator ChangeState(bool isActive)
-    {
-        float targetVolume = isActive ? _maxVolume : _minVolume;
-
-        if (!_audioSource.isPlaying)
+        if (_audioSource.isPlaying == false)
             _audioSource.Play();
 
-        while (!Mathf.Approximately(_audioSource.volume, targetVolume))
+        while (_audioSource.volume < _maxVolume)
         {
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, targetVolume, _soundDelta * Time.deltaTime);
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _maxVolume, _soundDelta * Time.deltaTime);
 
-            if (Mathf.Approximately(_audioSource.volume, _minVolume))
-            {
-                _audioSource.Pause();
-                break;
-            }
+            yield return null;
+        }
+    }
+
+    private IEnumerator DecreaseSound()
+    {
+        while (_audioSource.volume > _minVolume)
+        {
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _minVolume, _soundDelta * Time.deltaTime);
 
             yield return null;
         }
 
-        _audioSource.volume = targetVolume;
-
-        if (targetVolume > _minVolume)
-            _audioSource.UnPause();
+        if (_audioSource.volume <= _minVolume)
+            _audioSource.Pause();
     }
 }
