@@ -5,9 +5,9 @@ public abstract class AlarmBase : MonoBehaviour
 {
     protected Coroutine CurrentCoroutine;
 
-    public abstract void AlarmActivated();
+    public abstract void Activate();
 
-    public abstract void AlarmDeactivated();
+    public abstract void Deactivate();
 
     protected void RefreshCoroutine(IEnumerator coroutine)
     {
