@@ -17,14 +17,14 @@ public class AlarmSound : AlarmBase
         SetupAudioSource();
     }
 
-    public override void AlarmActivated()
+    public override void Activate()
     {
-        RefreshCoroutine(IncreaseSound());
+        RefreshCoroutine(ChangeSoundVolume(_maxVolume));
     }
 
-    public override void AlarmDeactivated()
+    public override void Deactivate()
     {
-        RefreshCoroutine(DecreaseSound());
+        RefreshCoroutine(ChangeSoundVolume(_minVolume));
     }
 
     private void SetupAudioSource()
@@ -39,29 +39,18 @@ public class AlarmSound : AlarmBase
             return;
     }
 
-    private IEnumerator IncreaseSound()
+    private IEnumerator ChangeSoundVolume(float targetVolume)
     {
-        if (_audioSource.isPlaying == false)
+        if (targetVolume > _minVolume && _audioSource.isPlaying == false)
             _audioSource.Play();
 
-        while (_audioSource.volume < _maxVolume)
+        while (Mathf.Approximately(_audioSource.volume, targetVolume) == false)
         {
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _maxVolume, _soundDelta * Time.deltaTime);
-
-            yield return null;
-        }
-    }
-
-    private IEnumerator DecreaseSound()
-    {
-        while (_audioSource.volume > _minVolume)
-        {
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _minVolume, _soundDelta * Time.deltaTime);
-
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, targetVolume, _soundDelta * Time.deltaTime);
             yield return null;
         }
 
-        if (_audioSource.volume <= _minVolume)
+        if (Mathf.Approximately(_audioSource.volume, _minVolume))
             _audioSource.Pause();
     }
 }
