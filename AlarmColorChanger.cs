@@ -9,43 +9,32 @@ public class AlarmColorChanger : AlarmBase
 
     private Renderer _renderer;
 
+    private readonly float _colorChangeDelta = 0.4f;
+
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
         _renderer.material.color = _defaultColor;
     }
 
-    public override void AlarmActivated()
+    public override void Activate()
     {
-        RefreshCoroutine(ChangeColorToAlarm());
+        RefreshCoroutine(ChangeColor(_alarmColor));
     }
 
-    public override void AlarmDeactivated() 
+    public override void Deactivate() 
     {
-        RefreshCoroutine(ChangeColorToNormal());
+        RefreshCoroutine(ChangeColor(_defaultColor));
     }
 
-    private IEnumerator ChangeColorToAlarm()
+    private IEnumerator ChangeColor(Color targetColor)
     {
-        while (Equals(_renderer.material.color, _alarmColor) == false)
+        while (Equals(_renderer.material.color, targetColor) == false)
         {
-            _renderer.material.color = Color.Lerp(_renderer.material.color, _alarmColor, Time.deltaTime);
-
+            _renderer.material.color = Color.Lerp(_renderer.material.color, targetColor, _colorChangeDelta * Time.deltaTime);
             yield return null;
         }
 
-        _renderer.material.color = _alarmColor;
-    }
-
-    private IEnumerator ChangeColorToNormal()
-    {
-        while (Equals(_renderer.material.color, _defaultColor) == false)
-        {
-            _renderer.material.color = Color.Lerp(_renderer.material.color, _defaultColor, Time.deltaTime);
-
-            yield return null;
-        }
-
-        _renderer.material.color = _defaultColor;
+        _renderer.material.color = targetColor;
     }
 }
